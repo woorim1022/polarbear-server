@@ -13,11 +13,10 @@ String host = "서버 주소";
 const long interval = 5000;
 unsigned long previousMillis = 0;
 float loadcellValue = 372.0;
-int flag = 0; //무게값을 한 번만 측정
+int flag = 0;
 
 WiFiServer server(80);
 WiFiClient client;
-HTTPClient http;
 HX711 scale;
 
 void setup() {
@@ -73,34 +72,47 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  HTTPClient http;
+  float weight;
+  String PostData; 
 
-  if(flag == 0) {
-    float weight = scale.get_units(5);
+  //값을 3번은 측정해야 더 정확한 값이 나올 것 같아서 flag 설정함
+  while(flag < 3) {
+    weight = scale.get_units(5);
     while(weight <= 10) {
       weight = scale.get_units(5);
     }
+    flag = flag + 1;
+  }
+
+  //flag가 3일 때만 데이터 전송
+  if(flag == 3){
+    char stringdata[10];
+
+    //float to String 소수점 버림 처리함
+    dtostrf(weight, 4, 0, stringdata);
+    Serial.printf("%s\n", stringdata);
+    PostData = stringdata;
+
+    //POST 전송
+    http.begin("http://xayahx.dothome.co.kr/loadcell.php");
+    http.addHeader("Content-Type","application/x-www-form-urlencoded");
+    int httpCode = http.POST("weight="+PostData);
+    String payload = http.getString();
     
-    String phpHost = host+"/loadcell.php?weight="+String(weight);
-    Serial.print("Connect to ");
-    Serial.println(phpHost);
-    
-    http.begin(client, phpHost);
     http.setTimeout(1000);
-    int httpCode = http.GET();
    
     if(httpCode > 0) {
-      Serial.printf("GET code : %d\n\n", httpCode);
+      Serial.printf("POST code : %d\n\n", httpCode);
  
-      if(httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
-        Serial.println(payload);
-      }
+    if(httpCode == HTTP_CODE_OK) {
+      Serial.println(payload);
+     }
     } 
     else {
-      Serial.printf("GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+    Serial.printf("POST failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
     http.end();
+    flag = flag + 1;
   }
-  flag = 1;
- 
 }
