@@ -14,7 +14,7 @@
     $ulevel = $_POST["ulevel"];
     $uexp = $_POST["uexp"];
 
-    $sql = "INSERT INTO users VALUES ('$uid', '$uname', '$ulevel', '$uexp')";
+    $sql = "INSERT INTO users VALUES ('$uid', '$uname', '$ulevel', '$uexp', 0, 0)";
     $result = mysqli_query($link, $sql);
     
     $response = array();
