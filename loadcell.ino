@@ -7,8 +7,8 @@
 
 //각자 수정해야 할 부분
 const char* ssid = "공유기 이름";
-const char* password = "공유기 비번";
-String host = "서버 주소";
+const char* password = "공유기 비밀번호";
+String host = "http://polarbear1022.dothome.co.kr";
 
 const long interval = 5000;
 unsigned long previousMillis = 0;
@@ -74,7 +74,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   HTTPClient http;
   float weight;
-  String PostData; 
+  String WeightData; 
 
   //값을 3번은 측정해야 더 정확한 값이 나올 것 같아서 flag 설정함
   while(flag < 3) {
@@ -90,14 +90,20 @@ void loop() {
     char stringdata[10];
 
     //float to String 소수점 버림 처리함
-    dtostrf(weight, 4, 0, stringdata);
+    dtostrf(weight, 5, 0, stringdata);
     Serial.printf("%s\n", stringdata);
-    PostData = stringdata;
+
+    //부모 테이블의 기본키 정보를 받아오는 걸 아직 구현을 못해서 테스트 시에는 WidData 값을 알맞게 수정해서 넣어주어야 함
+    String WidData = "test";
+    WeightData = stringdata;
+
+    //wdate는 php 내에서 따로 db로 전달
+    String Send = "wid=" + WidData + "&weight=" + WeightData;
 
     //POST 전송
-    http.begin("http://xayahx.dothome.co.kr/loadcell.php");
+    http.begin("http://polarbear1022.dothome.co.kr/loadcell.php");
     http.addHeader("Content-Type","application/x-www-form-urlencoded");
-    int httpCode = http.POST("weight="+PostData);
+    int httpCode = http.POST(Send);
     String payload = http.getString();
     
     http.setTimeout(1000);
