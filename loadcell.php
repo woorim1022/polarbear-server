@@ -10,9 +10,9 @@ $mysqli = new mysqli($host, $user, $pw, $dbName);
 	if($mysqli){ 
 		echo "MySQL successfully connected!<br/>"; 
 		
-		$weight = $_GET['weight']; 
+		$weight = (float)$_POST['weight']; 
 		 
-		echo "<br/>Weight = $weight"; 
+		echo "<br/>weight = $weight"; 
 		
 		//이 부분을 각자 테스트 서버에 맞게 수정하시면 됩니다 
 		$query = "INSERT INTO weight (weight) VALUES ('$weight')"; 
@@ -26,4 +26,3 @@ $mysqli = new mysqli($host, $user, $pw, $dbName);
 
 mysqli_close($mysqli); 
 ?>
-
