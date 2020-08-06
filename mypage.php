@@ -5,7 +5,7 @@
 	
 	$uid=$_POST["uid"];
 	
-	$sql="SELECT SUM(apple) AS total1, SUM(fish) AS total2, SUM(meat) AS total3
+	$sql="SELECT SUM(apple) AS total1, SUM(fish) AS total2, SUM(meat) AS total3,
 		   SUM(ice) AS total4 FROM buying_list WHERE uid='$uid' && uid=mypage_id GROUP BY mypage_id";
 	$result= mysqli_query($link, $sql);	  
 	
