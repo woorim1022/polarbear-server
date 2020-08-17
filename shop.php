@@ -1,81 +1,35 @@
-<?php
-	$link=mysqli_connect("localhost", "polarbear1022", "rladnfla7733!", "polarbear1022");
-	mysqli_set_charset($link,"utf8");
+<?php 
+    $link=mysqli_connect("localhost", "polarbear1022", "rladnfla7733!", "polarbear1022");
+
+    $sql = "SELECT * FROM products";
+    $result = mysqli_query($link, $sql);
+
+    
+    if(mysqli_num_rows($result) > 0)
+    {
+	$response = array();
+        	
+	while($row = mysqli_fetch_assoc($result))
+	{
+          		extract($row);
 	
-	$uid=$_POST["uid"];
-	
-	
-	if(isset($_POST["pname"]) && $_POST["pname"]=="apple"){
-		$pname=$_POST["pname"];
-		if(isset($_POST["user_point"])){
-			$user_point=$_POST["user_point"];
-		}
-		else{
-			echo "구입불가< br/>";
-		}
-		if(($user_total-50)>0){
-			mysqli_query($link, "UPDATE users SET user_point=user_point - 50 where uid='$uid");
-			mysqli_query($link, "INSERT INTO buying_list VALUES ('$uid', '1', '0', '0','0')");
-			echo "구입완료<br/>";		
-		}
-		else{
-			echo "포인트가 부족합니다.<br/>";
-		}
-	}
-	elseif(isset($_POST["pname"]) && $_POST["pname"]=="fish"){
-		$pname=$_POST["pname"];
-		if(isset($_POST["user_point"])){
-			$user_point=$_POST["user_point"];
-		}
-		else{
-			echo "구입불가< br/>";
-		}
-		if(($user_total-100)>0){
-			mysqli_query($link, "UPDATE users SET user_point=user_point - 100 where uid='$uid");
-			mysqli_query($link, "INSERT INTO buying_list VALUES ('$uid', '0', '1', '0','0')");
-			echo "구입완료<br/>";		
-		}
-		else{
-			echo "포인트가 부족합니다.<br/>";
-		}
-	}
-	elseif(isset($_POST["pname"]) && $_POST["pname"]=="meat"){
-		$pname=$_POST["pname"];
-		if(isset($_POST["user_point"])){
-			$user_point=$_POST["user_point"];
-		}
-		else{
-			echo "구입불가< br/>";
-		}
-		if(($user_total-150)>0){
-			mysqli_query($link, "UPDATE users SET user_point=user_point - 150 where uid='$uid");
-			mysqli_query($link, "INSERT INTO buying_list VALUES ('$uid', '0', '0', '1','0')");
-			echo "구입완료<br/>";		
-		}
-		else{
-			echo "포인트가 부족합니다.<br/>";
-		}
-	}
-	elseif(isset($_POST["pname"]) && $_POST["pname"]=="apple"){
-		$pname=$_POST["pname"];
-		if(isset($_POST["user_point"])){
-			$user_point=$_POST["user_point"];
-		}
-		else{
-			echo "구입불가< br/>";
-		}
-		if(($user_total-200)>0){
-			mysqli_query($link, "UPDATE users SET user_point=user_point - 200 where uid='$uid");
-			mysqli_query($link, "INSERT INTO buying_list VALUES ('$uid', '0', '0', '0','1')");
-			echo "구입완료<br/>";		
-		}
-		else{
-			echo "포인트가 부족합니다.<br/>";
-		}
-	}
-	else{
-		echo "구입불가< br/>";
-	}
-	
+           		array_push($response, 
+	    		array('pid' => $pid, 
+			'pname' => $pname, 
+			'buyerid' => $buyerid,
+			'price' => $price
+          		));
+        }
+    }
+    else{
+        echo "MySQL failed!<br/>"; 
+    }
+
+    header('Content-Type: application/json; charset=utf8');
+    $json = json_encode(array("donate list"=>$response), JSON_PRETTY_PRINT+JSON_UNESCAPED_UNICODE);
+    echo $json;
+
+
+
 ?>
 	
